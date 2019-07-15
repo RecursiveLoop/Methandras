@@ -3,12 +3,19 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace AccountNuke
 {
-    public class TerminateEC2Instances : IAsyncProcess
+    public class TerminateEC2Instances : Runner
     {
-        public async Task Execute(string RoleARN)
+        public TerminateEC2Instances(ILogger<Runner> logger):base(logger)
+        {
+
+        }
+
+      
+        public async override Task DoAction(string RoleARN)
         {
             var creds = Utils.AssumeRole(RoleARN);
             foreach (var region in Utils.GetRegions())
