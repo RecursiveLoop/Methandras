@@ -5,13 +5,18 @@ using NLog;
 using System;
 using NLog.Extensions.Logging;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using AccountNuke.Runners;
 
 namespace AccountNuke
 {
     class Program
     {
-        static void Main(string[] args)
+        static string ParentOU = "ou-6nx6-ce943jmp";
+        static string AssumeRoleName = "OrganizationAccountAccessRole";
+        static void Main(string[] args) 
         {
+
             var logger = LogManager.GetCurrentClassLogger();
             try
             {
@@ -23,10 +28,33 @@ namespace AccountNuke
                 var servicesProvider = BuildDi(config);
                 using (servicesProvider as IDisposable)
                 {
-                    var runner = servicesProvider.GetRequiredService<TerminateEC2Instances>();
-                    var result=runner.DoAction("Terminate EC2 instances");
+                    
+                    foreach (var accountId in Utils.GetChildAccountIds(ParentOU))
+                    {
+                        
+                        string RoleARN = $"arn:aws:iam::{accountId}:role/{AssumeRoleName}";
+                        logger.Debug($"Trying to assume role {RoleARN}");
+                       
+                        List<Task> lstTasks = new List<Task>();
+                        Runner runner = servicesProvider.GetRequiredService<TerminateEC2Instances>();
+                        var result = runner.DoAction(RoleARN);
+                        lstTasks.Add(result);
 
-                    Task.WaitAll(result);
+
+                        runner = servicesProvider.GetRequiredService<DeleteIAMUsers>();
+                        result = runner.DoAction(RoleARN);
+                        lstTasks.Add(result);
+
+                        runner = servicesProvider.GetRequiredService<TerminateRDSInstances>();
+                        result = runner.DoAction(RoleARN);
+                        lstTasks.Add(result);
+
+                        runner = servicesProvider.GetRequiredService<DeleteS3Buckets>();
+                        result = runner.DoAction(RoleARN);
+                        lstTasks.Add(result);
+
+                        Task.WaitAll(lstTasks.ToArray());
+                    }
 
                     Console.WriteLine("Press ANY key to exit");
                     Console.ReadKey();
@@ -49,12 +77,16 @@ namespace AccountNuke
         {
             return new ServiceCollection()
                .AddTransient<TerminateEC2Instances>() // Runner is the custom class
+               .AddTransient<TerminateRDSInstances>()
+                .AddTransient<DeleteS3Buckets>()
+                .AddTransient<DeleteIAMUsers>() 
+                
                .AddLogging(loggingBuilder =>
                {
-          // configure Logging with NLog
-          loggingBuilder.ClearProviders();
+                   // configure Logging with NLog
+                   loggingBuilder.ClearProviders();
                    loggingBuilder.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
-                   loggingBuilder.AddNLog(config);
+                   loggingBuilder.AddNLog(config);  
                })
                .BuildServiceProvider();
         }

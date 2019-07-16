@@ -10,7 +10,7 @@ namespace AccountNuke
     {
         private readonly ILogger<Runner> _logger;
 
-        private readonly string _action;
+        protected  string _action;
 
         public Runner(ILogger<Runner> logger)
         {
