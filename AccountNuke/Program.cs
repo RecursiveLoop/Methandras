@@ -40,6 +40,9 @@ namespace AccountNuke
                         var result = runner.DoAction(RoleARN);
                         lstTasks.Add(result);
 
+                        runner = servicesProvider.GetRequiredService<DeleteCloudFormation>();
+                        result = runner.DoAction(RoleARN);
+                        lstTasks.Add(result);
 
                         runner = servicesProvider.GetRequiredService<DeleteIAMUsers>();
                         result = runner.DoAction(RoleARN);
@@ -79,8 +82,8 @@ namespace AccountNuke
                .AddTransient<TerminateEC2Instances>() // Runner is the custom class
                .AddTransient<TerminateRDSInstances>()
                 .AddTransient<DeleteS3Buckets>()
-                .AddTransient<DeleteIAMUsers>() 
-                
+                .AddTransient<DeleteIAMUsers>()
+                  .AddTransient<DeleteCloudFormation>()
                .AddLogging(loggingBuilder =>
                {
                    // configure Logging with NLog

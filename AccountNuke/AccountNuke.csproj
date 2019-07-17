@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AWSSDK.CloudFormation" Version="3.3.100.47" />
     <PackageReference Include="AWSSDK.EC2" Version="3.3.121.4" />
     <PackageReference Include="AWSSDK.IdentityManagement" Version="3.3.103" />
     <PackageReference Include="AWSSDK.Organizations" Version="3.3.103.5" />
