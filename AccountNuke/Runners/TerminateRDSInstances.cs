@@ -22,11 +22,11 @@ namespace AccountNuke.Runners
 
             var logger = LogManager.GetCurrentClassLogger();
 
-            Parallel.ForEach(Utils.GetRegions(), (region) =>
+            Parallel.ForEach(SharedLibrary.Utilities.GetRegions(), (region) =>
             {
 
                 logger.Debug($"Checking RDS instances in region {region.DisplayName }");
-                var creds = Utils.AssumeRole(RoleARN, region);
+                var creds = SharedLibrary.Utilities.AssumeRole(RoleARN, region);
 
                 Amazon.RDS.AmazonRDSClient client = new Amazon.RDS.AmazonRDSClient(creds, region);
 

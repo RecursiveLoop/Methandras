@@ -23,11 +23,11 @@ namespace AccountNuke.Runners
             var logger = LogManager.GetCurrentClassLogger();
 
 
-            Parallel.ForEach(Utils.GetRegions(), (region) =>
+            Parallel.ForEach(SharedLibrary.Utilities.GetRegions(), (region) =>
             {
                 logger.Debug($"Checking ECS clusters in region {region.DisplayName }");
 
-                var creds = Utils.AssumeRole(RoleARN, region);
+                var creds = SharedLibrary.Utilities.AssumeRole(RoleARN, region);
 
                 Amazon.ECS.AmazonECSClient client = new Amazon.ECS.AmazonECSClient(creds, region);
 

@@ -24,7 +24,7 @@ namespace AccountNuke.Runners
 
             var logger = LogManager.GetCurrentClassLogger();
 
-            var creds = Utils.AssumeRole(RoleARN, RegionEndpoint.USEast1);
+            var creds = SharedLibrary.Utilities.AssumeRole(RoleARN, RegionEndpoint.USEast1);
             var sessionCreds = new SessionAWSCredentials(creds.AccessKeyId, creds.SecretAccessKey, creds.SessionToken);
 
             Amazon.IdentityManagement.AmazonIdentityManagementServiceClient client = new Amazon.IdentityManagement.AmazonIdentityManagementServiceClient(sessionCreds);

@@ -23,10 +23,10 @@ namespace AccountNuke.Runners
         {
             await base.DoAction(RoleARN);
             var logger = LogManager.GetCurrentClassLogger();
-            Parallel.ForEach(Utils.GetRegions(), (region) =>
+            Parallel.ForEach(SharedLibrary.Utilities.GetRegions(), (region) =>
            {
                logger.Debug($"Checking EC2 instances in region {region.DisplayName }");
-               var creds = Utils.AssumeRole(RoleARN, region);
+               var creds = SharedLibrary.Utilities.AssumeRole(RoleARN, region);
                var sessionCreds = new SessionAWSCredentials(creds.AccessKeyId, creds.SecretAccessKey, creds.SessionToken);
 
                Amazon.EC2.AmazonEC2Client client = new Amazon.EC2.AmazonEC2Client(sessionCreds, region);

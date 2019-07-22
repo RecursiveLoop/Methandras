@@ -30,7 +30,7 @@ namespace AccountNuke
                 using (servicesProvider as IDisposable)
                 {
 
-                    foreach (var accountId in Utils.GetChildAccountIds(ParentOU))
+                    foreach (var accountId in SharedLibrary.Utilities.GetChildAccountIds(ParentOU))
                     {
 
                         string RoleARN = $"arn:aws:iam::{accountId}:role/{AssumeRoleName}";

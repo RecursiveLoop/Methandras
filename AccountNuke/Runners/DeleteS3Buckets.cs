@@ -50,11 +50,11 @@ namespace AccountNuke.Runners
             var logger = LogManager.GetCurrentClassLogger();
 
 
-            Parallel.ForEach(Utils.GetRegions(), (region) =>
+            Parallel.ForEach(SharedLibrary.Utilities.GetRegions(), (region) =>
             {
                 logger.Debug($"Checking S3 buckets in region {region.DisplayName }");
 
-                var creds = Utils.AssumeRole(RoleARN, region);
+                var creds = SharedLibrary.Utilities.AssumeRole(RoleARN, region);
 
                 Amazon.S3.AmazonS3Client client = new Amazon.S3.AmazonS3Client(creds, region);
 
