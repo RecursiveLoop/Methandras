@@ -17,7 +17,9 @@
 
   <ItemGroup>
     <PackageReference Include="AWSSDK.CloudFormation" Version="3.3.100.47" />
+    <PackageReference Include="AWSSDK.DirectoryService" Version="3.3.100.49" />
     <PackageReference Include="AWSSDK.EC2" Version="3.3.121.4" />
+    <PackageReference Include="AWSSDK.ECS" Version="3.3.103.17" />
     <PackageReference Include="AWSSDK.IdentityManagement" Version="3.3.103" />
     <PackageReference Include="AWSSDK.Organizations" Version="3.3.103.5" />
     <PackageReference Include="AWSSDK.RDS" Version="3.3.107.4" />
@@ -32,6 +34,10 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
     <PackageReference Include="NLog" Version="4.6.6" />
     <PackageReference Include="NLog.Extensions.Logging" Version="1.5.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SharedLibrary\SharedLibrary.csproj" />
   </ItemGroup>
 
 </Project>

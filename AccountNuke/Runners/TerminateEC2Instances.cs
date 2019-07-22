@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Amazon.EC2.Model;
 using Amazon.Runtime;
 using NLog;
+using SharedLibrary;
 
 namespace AccountNuke.Runners
 {

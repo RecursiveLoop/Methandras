@@ -7,6 +7,7 @@ using Amazon.IdentityManagement.Model;
 using Amazon.Runtime;
 using Microsoft.Extensions.Logging;
 using NLog;
+using SharedLibrary;
 
 namespace AccountNuke.Runners
 {

@@ -7,6 +7,7 @@ using NLog.Extensions.Logging;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using AccountNuke.Runners;
+using SharedLibrary;
 
 namespace AccountNuke
 {
@@ -14,7 +15,7 @@ namespace AccountNuke
     {
         static string ParentOU = "ou-6nx6-ce943jmp";
         static string AssumeRoleName = "OrganizationAccountAccessRole";
-        static void Main(string[] args) 
+        static void Main(string[] args)
         {
 
             var logger = LogManager.GetCurrentClassLogger();
@@ -28,33 +29,24 @@ namespace AccountNuke
                 var servicesProvider = BuildDi(config);
                 using (servicesProvider as IDisposable)
                 {
-                    
+
                     foreach (var accountId in Utils.GetChildAccountIds(ParentOU))
                     {
-                        
+
                         string RoleARN = $"arn:aws:iam::{accountId}:role/{AssumeRoleName}";
                         logger.Debug($"Trying to assume role {RoleARN}");
-                       
+
+                        var lstRunners = GetRunnersToExecute(servicesProvider);
+
                         List<Task> lstTasks = new List<Task>();
-                        Runner runner = servicesProvider.GetRequiredService<TerminateEC2Instances>();
-                        var result = runner.DoAction(RoleARN);
-                        lstTasks.Add(result);
 
-                        runner = servicesProvider.GetRequiredService<DeleteCloudFormation>();
-                        result = runner.DoAction(RoleARN);
-                        lstTasks.Add(result);
+                        foreach (var runner in lstRunners)
+                        {
+                            var result = runner.DoAction(RoleARN);
+                            lstTasks.Add(result);
+                        }
 
-                        runner = servicesProvider.GetRequiredService<DeleteIAMUsers>();
-                        result = runner.DoAction(RoleARN);
-                        lstTasks.Add(result);
 
-                        runner = servicesProvider.GetRequiredService<TerminateRDSInstances>();
-                        result = runner.DoAction(RoleARN);
-                        lstTasks.Add(result);
-
-                        runner = servicesProvider.GetRequiredService<DeleteS3Buckets>();
-                        result = runner.DoAction(RoleARN);
-                        lstTasks.Add(result);
 
                         Task.WaitAll(lstTasks.ToArray());
                     }
@@ -76,6 +68,27 @@ namespace AccountNuke
             }
         }
 
+        static List<Runner> GetRunnersToExecute(IServiceProvider servicesProvider)
+        {
+            List<Runner> lst = new List<Runner>();
+
+            lst.Add(servicesProvider.GetRequiredService<TerminateEC2Instances>());
+
+            lst.Add(servicesProvider.GetRequiredService<DeleteCloudFormation>());
+
+            lst.Add(servicesProvider.GetRequiredService<DeleteIAMUsers>());
+
+            lst.Add(servicesProvider.GetRequiredService<TerminateRDSInstances>());
+
+            lst.Add(servicesProvider.GetRequiredService<DeleteS3Buckets>());
+
+            lst.Add(servicesProvider.GetRequiredService<DeleteECSClusters>());
+
+            lst.Add(servicesProvider.GetRequiredService<DeleteManagedAD>());
+
+            return lst;
+        }
+
         private static IServiceProvider BuildDi(IConfiguration config)
         {
             return new ServiceCollection()
@@ -83,13 +96,15 @@ namespace AccountNuke
                .AddTransient<TerminateRDSInstances>()
                 .AddTransient<DeleteS3Buckets>()
                 .AddTransient<DeleteIAMUsers>()
+                .AddTransient<DeleteECSClusters>()
+                .AddTransient<DeleteManagedAD>()
                   .AddTransient<DeleteCloudFormation>()
                .AddLogging(loggingBuilder =>
                {
                    // configure Logging with NLog
                    loggingBuilder.ClearProviders();
                    loggingBuilder.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
-                   loggingBuilder.AddNLog(config);  
+                   loggingBuilder.AddNLog(config);
                })
                .BuildServiceProvider();
         }

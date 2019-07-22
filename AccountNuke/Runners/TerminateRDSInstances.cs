@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Amazon.RDS.Model;
 using Microsoft.Extensions.Logging;
 using NLog;
+using SharedLibrary;
 
 namespace AccountNuke.Runners
 {

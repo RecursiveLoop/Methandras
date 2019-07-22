@@ -6,6 +6,7 @@ using Amazon.CloudFormation.Model;
 using Amazon.Runtime;
 using Microsoft.Extensions.Logging;
 using NLog;
+using SharedLibrary;
 
 namespace AccountNuke.Runners
 {
@@ -29,7 +30,7 @@ namespace AccountNuke.Runners
 
                 Amazon.CloudFormation.AmazonCloudFormationClient client = new Amazon.CloudFormation.AmazonCloudFormationClient(creds, region);
 
-              
+
 
                 var listStackResult = client.ListStacksAsync(new ListStacksRequest
                 {
@@ -49,7 +50,7 @@ namespace AccountNuke.Runners
 
                 foreach (var cfStack in listStackResult.StackSummaries)
                 {
-                    var deleteStackResult = client.DeleteStackAsync(new DeleteStackRequest {  StackName = cfStack.StackName }).Result;
+                    var deleteStackResult = client.DeleteStackAsync(new DeleteStackRequest { StackName = cfStack.StackName }).Result;
 
                     if (deleteStackResult.HttpStatusCode == System.Net.HttpStatusCode.OK)
                     {

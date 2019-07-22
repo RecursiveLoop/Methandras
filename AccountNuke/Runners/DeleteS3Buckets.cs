@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using NLog;
 using System.Linq;
 using Amazon;
+using SharedLibrary;
 
 namespace AccountNuke.Runners
 {
