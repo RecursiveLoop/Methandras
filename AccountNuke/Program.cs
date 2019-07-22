@@ -13,7 +13,7 @@ namespace AccountNuke
 {
     class Program
     {
-        static string ParentOU = "ou-6nx6-ce943jmp";
+        static string ParentOU = "ou-6nx6-93xwjm3g";
         static string AssumeRoleName = "OrganizationAccountAccessRole";
         static void Main(string[] args)
         {

@@ -8,12 +8,15 @@ using NLog.Extensions.Logging;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using SharedLibrary;
+using static AccountAllocator.Runners.CreateIAMUsers;
+using System.IO;
+using CsvHelper;
 
 namespace Methandras
 {
     class Program
     {
-        static string ParentOU = "ou-6nx6-ce943jmp";
+        static string ParentOU = "ou-6nx6-93xwjm3g";
         static string AssumeRoleName = "OrganizationAccountAccessRole";
         static void Main(string[] args)
         {
@@ -29,27 +32,26 @@ namespace Methandras
                 using (servicesProvider as IDisposable)
                 {
 
-                    foreach (var accountId in SharedLibrary.Utilities.GetChildAccountIds(ParentOU))
+                    using (var writer = new StreamWriter(DateTime.Now.ToString("yyyyMMdd-HHmmss") + ".csv"))
+                    using (var csv = new CsvWriter(writer))
                     {
+                        List<UserType> lstUsers = new List<UserType>();
 
-                        string RoleARN = $"arn:aws:iam::{accountId}:role/{AssumeRoleName}";
-                        logger.Debug($"Trying to assume role {RoleARN}");
+                        Parallel.ForEach(SharedLibrary.Utilities.GetChildAccountIds(ParentOU), (accountId) =>
+                       {
 
-                        var lstRunners = GetRunnersToExecute(servicesProvider);
+                           string RoleARN = $"arn:aws:iam::{accountId}:role/{AssumeRoleName}";
+                           logger.Debug($"Trying to assume role {RoleARN}");
+                           var result = new CreateIAMUsers(logger).DoAction(RoleARN).Result;
+                           result.AccountId = accountId;
+                           lstUsers.Add(result);
+                           logger.Debug($"Created new user {result.Username} in account {accountId}. ");
 
-                        List<Task> lstTasks = new List<Task>();
+                       });
 
-                        foreach (var runner in lstRunners)
-                        {
-                            var result = runner.DoAction(RoleARN);
-                            lstTasks.Add(result);
-                        }
-
-
-
-                        Task.WaitAll(lstTasks.ToArray());
+                        csv.WriteRecords(lstUsers);
+                        csv.Flush();
                     }
-
                     Console.WriteLine("Press ANY key to exit");
                     Console.ReadKey();
                 }
@@ -67,15 +69,7 @@ namespace Methandras
             }
         }
 
-        static List<Runner> GetRunnersToExecute(IServiceProvider servicesProvider)
-        {
-            List<Runner> lst = new List<Runner>();
 
-
-            lst.Add(servicesProvider.GetRequiredService<CreateIAMUsers>());
-
-            return lst;
-        }
 
         private static IServiceProvider BuildDi(IConfiguration config)
         {

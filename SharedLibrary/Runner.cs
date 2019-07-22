@@ -22,5 +22,12 @@ namespace SharedLibrary
 
             _logger.LogDebug(20, "Executing - {Action}", _action);
         }
+
+        public virtual async Task<T> DoAction<T>(string RoleARN) where T : class
+        {
+
+            _logger.LogDebug(20, "Executing - {Action}", _action);
+            return null;
+        }
     }
 }
