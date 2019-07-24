@@ -35,22 +35,24 @@ namespace Methandras
                     using (var writer = new StreamWriter(DateTime.Now.ToString("yyyyMMdd-HHmmss") + ".csv"))
                     using (var csv = new CsvWriter(writer))
                     {
-                        List<UserType> lstUsers = new List<UserType>();
+                         List<UserType> lstUsers = new List<UserType>();
 
                         Parallel.ForEach(SharedLibrary.Utilities.GetChildAccountIds(ParentOU), (accountId) =>
                        {
 
                            string RoleARN = $"arn:aws:iam::{accountId}:role/{AssumeRoleName}";
                            logger.Debug($"Trying to assume role {RoleARN}");
-                           var result = new CreateIAMUsers(logger).DoAction(RoleARN).Result;
-                           result.AccountId = accountId;
-                           lstUsers.Add(result);
-                           logger.Debug($"Created new user {result.Username} in account {accountId}. ");
+                             var result = new CreateIAMUsers(logger).DoAction(RoleARN).Result;
+                                 result.AccountId = accountId;
+                             lstUsers.Add(result);
+                             logger.Debug($"Created new user {result.Username} in account {accountId}. ");
 
+                        //   var t=new AttachPolicy(logger).DoAction(RoleARN);
+                         //  Task.WaitAll(t);
                        });
 
-                        csv.WriteRecords(lstUsers);
-                        csv.Flush();
+                           csv.WriteRecords(lstUsers);
+                          csv.Flush();
                     }
                     Console.WriteLine("Press ANY key to exit");
                     Console.ReadKey();

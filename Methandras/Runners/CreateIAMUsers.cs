@@ -83,10 +83,12 @@ namespace AccountAllocator.Runners
                 {
 
                     var createUserResult = await client.CreateUserAsync(new CreateUserRequest { UserName = Username });
-                    var attachPolicyResult = await client.AttachUserPolicyAsync(new AttachUserPolicyRequest { PolicyArn = "arn:aws:iam::aws:policy/AdministratorAccess", UserName = Username });
 
 
                 }
+
+                var attachPolicyResult = await client.AttachUserPolicyAsync(new AttachUserPolicyRequest { PolicyArn = "arn:aws:iam::aws:policy/AdministratorAccess", UserName = Username });
+
 
                 var createLoginProfileResult = await client.CreateLoginProfileAsync(new CreateLoginProfileRequest { Password = newPassword, UserName = Username, PasswordResetRequired = true });
 
