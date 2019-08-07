@@ -36,7 +36,7 @@ namespace AccountNuke.Runners
                 {
                     if (instance.DBInstanceStatus != "deleting")
                     {
-                        var deleteDBInstanceResult = client.DeleteDBInstanceAsync(new DeleteDBInstanceRequest { DBInstanceIdentifier = instance.DBInstanceIdentifier }).Result;
+                        var deleteDBInstanceResult = client.DeleteDBInstanceAsync(new DeleteDBInstanceRequest { SkipFinalSnapshot=true, DeleteAutomatedBackups=true, DBInstanceIdentifier = instance.DBInstanceIdentifier }).Result;
 
                         if (deleteDBInstanceResult.HttpStatusCode == System.Net.HttpStatusCode.OK)
                             logger.Debug($"Deleted RDS instance {instance.DBInstanceIdentifier} in region {region.DisplayName }");

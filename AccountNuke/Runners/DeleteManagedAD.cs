@@ -46,6 +46,7 @@ namespace AccountNuke.Runners
                         {
                             logger.Error($"An error occurred deleting directory {directory.DirectoryId} in {region.DisplayName }: {ex2.Message}");
                         }
+
                     }
                 }
                 catch (Exception ex)

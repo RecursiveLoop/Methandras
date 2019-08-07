@@ -72,19 +72,19 @@ namespace AccountNuke
         {
             List<Runner> lst = new List<Runner>();
 
-            lst.Add(servicesProvider.GetRequiredService<TerminateEC2Instances>());
+           lst.Add(servicesProvider.GetRequiredService<TerminateEC2Instances>());
 
-            lst.Add(servicesProvider.GetRequiredService<DeleteCloudFormation>());
+          //  lst.Add(servicesProvider.GetRequiredService<DeleteCloudFormation>());
 
             lst.Add(servicesProvider.GetRequiredService<DeleteIAMUsers>());
 
             lst.Add(servicesProvider.GetRequiredService<TerminateRDSInstances>());
 
-            lst.Add(servicesProvider.GetRequiredService<DeleteS3Buckets>());
+         //   lst.Add(servicesProvider.GetRequiredService<DeleteS3Buckets>());
 
-            lst.Add(servicesProvider.GetRequiredService<DeleteECSClusters>());
+         //   lst.Add(servicesProvider.GetRequiredService<DeleteECSClusters>());
 
-            lst.Add(servicesProvider.GetRequiredService<DeleteManagedAD>());
+         //   lst.Add(servicesProvider.GetRequiredService<DeleteManagedAD>());
 
             return lst;
         }
